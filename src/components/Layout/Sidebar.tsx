@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import { open } from "@tauri-apps/plugin-dialog";
 import { isTauriAvailable } from "@/lib/tauri";
 import { EnvironmentPanel } from "@/components/Environment/EnvironmentPanel";
+import { Logo } from "@/components/Logo";
 
 // Method colors for request badges
 const METHOD_COLORS: Record<string, string> = {
@@ -271,7 +272,10 @@ export function Sidebar() {
       {/* Header */}
       <div className="p-3 border-b border-border">
         <div className="flex items-center justify-between">
-          <h1 className="font-semibold text-lg">Kvile</h1>
+          <div className="flex items-center gap-2">
+            <Logo size={24} />
+            <h1 className="font-semibold text-lg">Kvile</h1>
+          </div>
           <div className="flex items-center gap-1">
             {workspacePath && (
               <button

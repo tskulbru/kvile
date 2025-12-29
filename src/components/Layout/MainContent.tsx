@@ -17,6 +17,7 @@ import { parseAuthFromMetadata, applyAuth, applyAuthToUrl } from "@/lib/auth-hel
 import { updateRequestInContent } from "@/lib/http-serializer";
 import { open } from "@tauri-apps/plugin-dialog";
 import { useParseDebounced } from "@/hooks/useParseDebounced";
+import { Logo } from "@/components/Logo";
 
 export function MainContent() {
   const {
@@ -321,6 +322,7 @@ export function MainContent() {
     return (
       <div className="h-full flex items-center justify-center text-muted-foreground">
         <div className="text-center">
+          <Logo size={64} className="mx-auto mb-4" />
           <h2 className="text-xl font-semibold mb-2">Welcome to Kvile</h2>
           <p className="text-sm mb-4">
             Open a folder or create a new .http file to get started
