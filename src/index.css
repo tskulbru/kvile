@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Light Owl Theme */
+  :root {
+    --background: 0 0% 98%;
+    --foreground: 243 15% 29%;
+    --card: 0 0% 97%;
+    --card-foreground: 243 15% 29%;
+    --popover: 0 0% 98%;
+    --popover-foreground: 243 15% 29%;
+    --primary: 174 59% 40%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 94%;
+    --secondary-foreground: 243 15% 29%;
+    --muted: 0 0% 94%;
+    --muted-foreground: 196 16% 50%;
+    --accent: 0 0% 94%;
+    --accent-foreground: 243 15% 29%;
+    --destructive: 2 76% 59%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 85%;
+    --input: 0 0% 85%;
+    --ring: 174 59% 40%;
+    --radius: 0.5rem;
+  }
+
+  /* Night Owl Theme */
+  .dark {
+    --background: 207 95% 8%;
+    --foreground: 217 44% 88%;
+    --card: 209 70% 13%;
+    --card-foreground: 217 44% 88%;
+    --popover: 209 70% 13%;
+    --popover-foreground: 217 44% 88%;
+    --primary: 262 49% 55%;
+    --primary-foreground: 217 44% 88%;
+    --secondary: 206 48% 22%;
+    --secondary-foreground: 217 44% 88%;
+    --muted: 206 48% 22%;
+    --muted-foreground: 208 22% 58%;
+    --accent: 206 48% 22%;
+    --accent-foreground: 217 44% 88%;
+    --destructive: 1 83% 63%;
+    --destructive-foreground: 217 44% 88%;
+    --border: 206 58% 16%;
+    --input: 206 58% 20%;
+    --ring: 262 49% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+}
+
+/* Prevent text selection during drag operations */
+.no-select {
+  user-select: none;
+}
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Fix native select dropdown colors in dark mode */
+select {
+  color-scheme: light dark;
+}
+
+.dark select {
+  color-scheme: dark;
+}
+
+select option {
+  background-color: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+}

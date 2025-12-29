@@ -1,0 +1,156 @@
+### Authentication Examples for Kvile
+### This file demonstrates various authentication methods
+
+@baseUrl = https://httpbin.org
+
+### ============================================
+### Method 1: Using $basicAuth Dynamic Variable
+### ============================================
+
+### Basic Auth with dynamic variable
+# The $basicAuth variable generates the full "Basic <base64>" value
+GET {{baseUrl}}/basic-auth/testuser/testpass
+Authorization: {{$basicAuth testuser testpass}}
+
+###
+
+### ============================================
+### Method 2: Using Auth Directives
+### ============================================
+
+### Basic Auth with directives
+# @auth basic
+# @auth.username testuser
+# @auth.password testpass
+GET {{baseUrl}}/basic-auth/testuser/testpass
+
+###
+
+### Bearer Token with directive
+# @auth bearer
+# @auth.token my-secret-token-12345
+GET {{baseUrl}}/bearer
+
+###
+
+### API Key in Header
+# @auth apiKey
+# @auth.header X-API-Key
+# @auth.value my-api-key-here
+# @auth.in header
+GET {{baseUrl}}/headers
+
+###
+
+### API Key in Query Parameter
+# @auth apiKey
+# @auth.header api_key
+# @auth.value my-api-key-here
+# @auth.in query
+GET {{baseUrl}}/get
+
+###
+
+### ============================================
+### Method 3: OAuth 2.0 (Client Credentials)
+### ============================================
+
+### OAuth 2.0 Client Credentials Flow
+### Note: This requires a real OAuth server
+### Example with a hypothetical auth server:
+#
+# # @auth oauth2
+# # @oauth.tokenUrl https://auth.example.com/oauth/token
+# # @oauth.clientId my-client-id
+# # @oauth.clientSecret my-client-secret
+# # @oauth.scopes read write
+# # @oauth.grantType client_credentials
+# GET https://api.example.com/protected/resource
+
+###
+
+### ============================================
+### Method 4: OpenID Connect (Authorization Code + PKCE)
+### ============================================
+
+### OIDC Interactive Login Flow
+### This opens a browser for interactive login with your identity provider.
+### The flow:
+### 1. Kvile opens browser to the IdP's login page
+### 2. You authenticate in the browser
+### 3. IdP redirects to localhost:8080/callback
+### 4. Kvile exchanges the code for tokens
+### 5. The access token is automatically added to the request
+###
+### Using OIDC Discovery (recommended):
+### If your IdP supports .well-known/openid-configuration,
+### just provide the issuer URL:
+#
+# # @auth oidc
+# # @oidc.issuer https://login.example.com
+# # @oidc.clientId my-kvile-client
+# # @oidc.clientSecret {{oidcClientSecret}}
+# # @oidc.redirectUrl http://localhost:8080/callback
+# # @oidc.scopes openid profile email
+# GET https://api.example.com/me
+#
+### Using explicit endpoints (if discovery not available):
+#
+# # @auth oidc
+# # @oidc.authorizationEndpoint https://login.example.com/authorize
+# # @oidc.tokenEndpoint https://login.example.com/oauth/token
+# # @oidc.clientId my-kvile-client
+# # @oidc.redirectUrl http://localhost:8080/callback
+# # @oidc.scopes openid profile
+# GET https://api.example.com/me
+
+###
+
+### ============================================
+### Utility Variables
+### ============================================
+
+### Base64 Encoding
+# You can also use $base64 for custom encoding
+POST {{baseUrl}}/post
+Content-Type: application/json
+
+{
+  "encoded": "{{$base64 hello world}}",
+  "raw": "hello world"
+}
+
+###
+
+### URL Encoding
+GET {{baseUrl}}/get?query={{$urlEncode hello world with spaces}}
+
+###
+
+### ============================================
+### Chaining: Login then use token
+### ============================================
+
+### Step 1: Login (mock - httpbin doesn't have real login)
+POST {{baseUrl}}/post
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "secret"
+}
+
+> {%
+    // In a real scenario, capture the token from response
+    // client.global.set("authToken", response.body.json.token);
+    client.log("Login request sent");
+%}
+
+###
+
+### Step 2: Use the captured token
+### (Uncomment when you have a real auth endpoint)
+# GET {{baseUrl}}/headers
+# Authorization: Bearer {{authToken}}
+
+###

@@ -1,0 +1,183 @@
+### Kvile Demo - HTTP File Examples
+# This file demonstrates the .http file syntax supported by Kvile
+
+###############################################
+# Variables (VS Code REST Client style)
+###############################################
+
+@baseUrl = https://jsonplaceholder.typicode.com
+@contentType = application/json
+
+###############################################
+# Basic GET Request
+###############################################
+
+### Get all posts
+GET {{baseUrl}}/posts
+Accept: {{contentType}}
+
+### Get a single post
+GET {{baseUrl}}/posts/1
+
+###############################################
+# POST Request with Body
+###############################################
+
+### Create a new post
+POST {{baseUrl}}/posts
+Content-Type: {{contentType}}
+
+{
+  "title": "Hello from Kvile",
+  "body": "This is a test post created with Kvile HTTP Client",
+  "userId": 1
+}
+
+###############################################
+# PUT Request - Update Resource
+###############################################
+
+### Update a post
+PUT {{baseUrl}}/posts/1
+Content-Type: {{contentType}}
+
+{
+  "id": 1,
+  "title": "Updated Title",
+  "body": "Updated body content",
+  "userId": 1
+}
+
+###############################################
+# PATCH Request - Partial Update
+###############################################
+
+### Patch a post
+PATCH {{baseUrl}}/posts/1
+Content-Type: {{contentType}}
+
+{
+  "title": "Patched Title Only"
+}
+
+###############################################
+# DELETE Request
+###############################################
+
+### Delete a post
+DELETE {{baseUrl}}/posts/1
+
+###############################################
+# Query Parameters
+###############################################
+
+### Get posts with query params
+GET {{baseUrl}}/posts?userId=1&_limit=5
+Accept: {{contentType}}
+
+###############################################
+# Comments API
+###############################################
+
+### Get comments for a post
+GET {{baseUrl}}/posts/1/comments
+
+### Get all comments
+GET {{baseUrl}}/comments?postId=1
+
+###############################################
+# Users API
+###############################################
+
+### Get all users
+GET {{baseUrl}}/users
+
+### Get user by ID
+GET {{baseUrl}}/users/1
+
+###############################################
+# Headers Examples
+###############################################
+
+### Request with custom headers
+GET {{baseUrl}}/posts/1
+Accept: application/json
+X-Custom-Header: custom-value
+Cache-Control: no-cache
+
+###############################################
+# Pre/Post Request Scripts (JetBrains style)
+###############################################
+
+### Get posts with tests
+GET {{baseUrl}}/posts
+
+> {%
+    client.test("Status is 200", function() {
+        client.assert(response.status === 200, "Expected 200 OK");
+    });
+
+    client.test("Response is array", function() {
+        client.assert(Array.isArray(response.body), "Expected array response");
+    });
+
+    client.test("Has posts", function() {
+        client.assert(response.body.length > 0, "Expected at least one post");
+    });
+
+    // Store first post ID for next request
+    client.global.set("firstPostId", response.body[0].id);
+    client.log("Found", response.body.length, "posts");
+    client.log("Stored firstPostId:", response.body[0].id);
+%}
+
+###
+
+### Use stored variable from previous request
+GET {{baseUrl}}/posts/{{firstPostId}}
+
+> {%
+    client.test("Got correct post", function() {
+        client.assert(response.body.id === 1, "Expected post ID 1");
+    });
+
+    client.test("Post has title", function() {
+        client.assert(response.body.title, "Expected title");
+    });
+
+    client.log("Post title:", response.body.title);
+%}
+
+###
+
+### Pre-request script example
+< {%
+    // Generate dynamic values before request
+    request.variables.set("timestamp", $timestamp());
+    request.variables.set("requestId", $uuid());
+    client.log("Generated timestamp:", $timestamp());
+    client.log("Generated UUID:", $uuid());
+%}
+
+POST {{baseUrl}}/posts
+Content-Type: application/json
+X-Request-ID: {{requestId}}
+X-Timestamp: {{timestamp}}
+
+{
+    "title": "Dynamic post at {{timestamp}}",
+    "body": "Created with request ID {{requestId}}",
+    "userId": 1
+}
+
+> {%
+    client.test("Created successfully", function() {
+        client.assert(response.status === 201, "Expected 201 Created");
+    });
+
+    client.test("Has ID", function() {
+        client.assert(response.body.id, "Expected post ID in response");
+    });
+
+    client.log("Created post with ID:", response.body.id);
+%}

@@ -1,0 +1,77 @@
+name: Feature Request
+description: Suggest a new feature or enhancement
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Kvile! Please search existing issues to see if this feature has already been requested.
+
+  - type: checkboxes
+    id: searched
+    attributes:
+      label: Have you searched existing issues?
+      options:
+        - label: I have searched existing issues and found nothing related
+          required: true
+
+  - type: checkboxes
+    id: impact
+    attributes:
+      label: Feature Impact
+      description: How would this feature help you?
+      options:
+        - label: This feature is blocking me from using Kvile
+        - label: This would improve my daily workflow
+        - label: This would be a nice-to-have improvement
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Feature Description
+      description: A clear description of the feature and how it would improve your usage of Kvile
+      placeholder: |
+        I would like to...
+
+        This would help me because...
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use Case
+      description: Describe a specific scenario where you would use this feature
+      placeholder: |
+        When I'm working on...
+        I need to...
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Have you tried any workarounds or alternative approaches?
+    validations:
+      required: false
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Mockups or Examples
+      description: If applicable, add mockups, screenshots from other tools, or examples of how this might look
+    validations:
+      required: false
+
+  - type: dropdown
+    id: contribution
+    attributes:
+      label: Would you be willing to contribute this feature?
+      options:
+        - "Yes, I'd like to implement this"
+        - "Yes, with some guidance"
+        - "No, but I can help test"
+        - "No"
+    validations:
+      required: false

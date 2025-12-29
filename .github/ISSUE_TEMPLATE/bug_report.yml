@@ -1,0 +1,97 @@
+name: Bug Report
+description: Report a bug or unexpected behavior
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please search existing issues before submitting to avoid duplicates.
+
+  - type: checkboxes
+    id: searched
+    attributes:
+      label: Have you searched existing issues?
+      options:
+        - label: I have searched existing issues and found nothing related
+          required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Bug Severity
+      description: How does this bug affect your usage?
+      options:
+        - Makes Kvile unusable
+        - Blocks a specific workflow
+        - Annoying but I can work around it
+        - Minor visual/cosmetic issue
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Kvile Version
+      description: Which version are you using?
+      placeholder: "e.g., 0.1.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating System
+      options:
+        - Linux (Debian/Ubuntu)
+        - Linux (Arch)
+        - Linux (Fedora)
+        - Linux (Other)
+        - macOS (Apple Silicon)
+        - macOS (Intel)
+        - Windows 10
+        - Windows 11
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear description of the bug and steps to reproduce
+      placeholder: |
+        What happened:
+
+        Steps to reproduce:
+        1. Open a .http file
+        2. Click on...
+        3. See error
+
+        Expected behavior:
+    validations:
+      required: true
+
+  - type: textarea
+    id: http-file
+    attributes:
+      label: HTTP File Content (if applicable)
+      description: If the bug involves parsing or executing a request, paste the .http file content
+      render: http
+    validations:
+      required: false
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Add screenshots to help explain the problem
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error Logs
+      description: Any error messages or logs from the console
+      render: shell
+    validations:
+      required: false

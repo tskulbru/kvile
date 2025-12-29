@@ -1,0 +1,12 @@
+### Simple GET Request - No Variables
+GET https://jsonplaceholder.typicode.com/posts/1
+
+### Simple POST Request
+POST https://jsonplaceholder.typicode.com/posts
+Content-Type: application/json
+
+{
+  "title": "Test Post",
+  "body": "Hello from Kvile!",
+  "userId": 1
+}
