@@ -1,12 +1,25 @@
-# Kvile
+<p align="center">
+  <img src="src-tauri/icons/128x128.png" alt="Kvile Logo" width="100" height="100">
+</p>
 
-> A fast, lightweight HTTP client focused on `.http` file support. Built with Tauri, React, and Rust.
+<h1 align="center">Kvile</h1>
 
-**Kvile** (Norwegian for "rest") is an open-source HTTP debugging application designed for working with `.http` files. It treats `.http` files as first-class citizens, making it ideal for developers who prefer plain-text, git-friendly API collections.
+<p align="center">
+  <em>A fast, lightweight HTTP client focused on <code>.http</code> file support.</em><br>
+  <em>Built with Tauri, React, and Rust.</em>
+</p>
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey)
-![Built with Tauri](https://img.shields.io/badge/built%20with-Tauri%202-blue)
+<p align="center">
+  <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License">
+  <img src="https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey" alt="Platform">
+  <img src="https://img.shields.io/badge/built%20with-Tauri%202-blue" alt="Built with Tauri">
+</p>
+
+<p align="center">
+  <strong>Kvile</strong> (Norwegian for "rest") is an open-source HTTP debugging application designed for working with <code>.http</code> files. It treats <code>.http</code> files as first-class citizens, making it ideal for developers who prefer plain-text, git-friendly API collections.
+</p>
+
+---
 
 ## Features
 
@@ -170,5 +183,6 @@ MIT License - see [LICENSE](LICENSE) for details.
 ---
 
 <p align="center">
-  Made with care for developers who value simplicity
+  <img src="src-tauri/icons/32x32.png" alt="Kvile" width="20" height="20"><br>
+  <sub>Made with care for developers who value simplicity</sub>
 </p>
