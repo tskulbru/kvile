@@ -22,8 +22,7 @@ pub async fn parse_http_client_env(path: &Path) -> Result<EnvironmentConfig, Str
         .map_err(|e| format!("Failed to read env file: {}", e))?;
 
     let parsed: HashMap<String, HashMap<String, serde_json::Value>> =
-        serde_json::from_str(&content)
-            .map_err(|e| format!("Failed to parse env file: {}", e))?;
+        serde_json::from_str(&content).map_err(|e| format!("Failed to parse env file: {}", e))?;
 
     let mut environments = Vec::new();
     let mut shared = HashMap::new();
@@ -179,6 +178,9 @@ SINGLE_QUOTED='single quotes'
         assert_eq!(vars.get("API_TOKEN"), Some(&"your-token".to_string()));
         assert_eq!(vars.get("DEBUG"), Some(&"true".to_string()));
         assert_eq!(vars.get("QUOTED"), Some(&"hello world".to_string()));
-        assert_eq!(vars.get("SINGLE_QUOTED"), Some(&"single quotes".to_string()));
+        assert_eq!(
+            vars.get("SINGLE_QUOTED"),
+            Some(&"single quotes".to_string())
+        );
     }
 }

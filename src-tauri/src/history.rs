@@ -110,7 +110,7 @@ impl HistoryDb {
              FROM history
              WHERE workspace = ?1
              ORDER BY timestamp DESC
-             LIMIT ?2"
+             LIMIT ?2",
         )?;
 
         let entries = stmt.query_map(rusqlite::params![workspace, limit], |row| {
@@ -150,7 +150,7 @@ impl HistoryDb {
                     method, url, request_headers, request_body,
                     status, status_text, response_headers, response_body,
                     duration_ms, response_size
-             FROM history WHERE id = ?1"
+             FROM history WHERE id = ?1",
         )?;
 
         let result = stmt.query_row(rusqlite::params![id], |row| {

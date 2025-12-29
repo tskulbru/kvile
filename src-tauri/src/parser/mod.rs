@@ -1,7 +1,7 @@
-mod types;
-mod jetbrains;
-mod vscode;
 mod detect;
+mod jetbrains;
+mod types;
+mod vscode;
 
-pub use types::*;
 pub use detect::parse_http_content;
+pub use types::*;

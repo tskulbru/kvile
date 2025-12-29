@@ -120,7 +120,5 @@ fn is_relevant_path(path: &Path) -> bool {
         .map(|n| n.to_string_lossy().to_lowercase())
         .unwrap_or_default();
 
-    name.ends_with(".http")
-        || name.ends_with(".rest")
-        || name.contains(".env.json")
+    name.ends_with(".http") || name.ends_with(".rest") || name.contains(".env.json")
 }

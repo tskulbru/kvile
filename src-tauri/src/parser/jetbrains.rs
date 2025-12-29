@@ -46,11 +46,15 @@ pub fn parse_jetbrains(content: &str) -> Result<Vec<ParsedRequest>, ParseError> 
     let mut body_lines: Vec<String> = Vec::new();
     let lines: Vec<&str> = content.lines().collect();
     // File-level variables (VS Code style @var = value)
-    let mut file_variables: std::collections::HashMap<String, String> = std::collections::HashMap::new();
+    let mut file_variables: std::collections::HashMap<String, String> =
+        std::collections::HashMap::new();
 
     // Regex patterns
     let separator_re = Regex::new(r"^###\s*(.*)$").unwrap();
-    let method_re = Regex::new(r"^(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS|TRACE|CONNECT)\s+(.+?)(?:\s+(HTTP/[\d.]+))?$").unwrap();
+    let method_re = Regex::new(
+        r"^(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS|TRACE|CONNECT)\s+(.+?)(?:\s+(HTTP/[\d.]+))?$",
+    )
+    .unwrap();
     let header_re = Regex::new(r"^([\w-]+):\s*(.*)$").unwrap();
     let comment_re = Regex::new(r"^(?:#|//)").unwrap();
     let metadata_re = Regex::new(r"^#\s*@([\w-]+)\s+(.*)$").unwrap();
@@ -207,7 +211,11 @@ pub fn parse_jetbrains(content: &str) -> Result<Vec<ParsedRequest>, ParseError> 
         }
 
         // If we have a URL-like line without method, assume GET
-        if request.url.is_empty() && (trimmed.starts_with("http://") || trimmed.starts_with("https://") || trimmed.starts_with('/')) {
+        if request.url.is_empty()
+            && (trimmed.starts_with("http://")
+                || trimmed.starts_with("https://")
+                || trimmed.starts_with('/'))
+        {
             request.url = trimmed.to_string();
             idx += 1;
             continue;
@@ -257,8 +265,14 @@ Authorization: Bearer token123
 "#;
         let requests = parse_jetbrains(content).unwrap();
         assert_eq!(requests.len(), 1);
-        assert_eq!(requests[0].headers.get("Content-Type"), Some(&"application/json".to_string()));
-        assert_eq!(requests[0].headers.get("Authorization"), Some(&"Bearer token123".to_string()));
+        assert_eq!(
+            requests[0].headers.get("Content-Type"),
+            Some(&"application/json".to_string())
+        );
+        assert_eq!(
+            requests[0].headers.get("Authorization"),
+            Some(&"Bearer token123".to_string())
+        );
     }
 
     #[test]
@@ -385,8 +399,14 @@ GET {{baseUrl}}/posts/1
 "#;
         let requests = parse_jetbrains(content).unwrap();
         assert_eq!(requests.len(), 2);
-        assert!(requests[0].post_script.is_some(), "First request should have post_script");
-        assert!(requests[0].body.is_none(), "First request should not have body");
+        assert!(
+            requests[0].post_script.is_some(),
+            "First request should have post_script"
+        );
+        assert!(
+            requests[0].body.is_none(),
+            "First request should not have body"
+        );
         let script = requests[0].post_script.as_ref().unwrap();
         assert!(script.contains("client.test"));
         assert!(script.contains("client.global.set"));

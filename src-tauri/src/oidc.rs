@@ -162,8 +162,8 @@ pub fn build_auth_url(
         .or(discovery.map(|d| &d.authorization_endpoint))
         .ok_or("No authorization endpoint configured")?;
 
-    let mut url = Url::parse(auth_endpoint)
-        .map_err(|e| format!("Invalid authorization endpoint: {}", e))?;
+    let mut url =
+        Url::parse(auth_endpoint).map_err(|e| format!("Invalid authorization endpoint: {}", e))?;
 
     {
         let mut params = url.query_pairs_mut();
@@ -233,7 +233,8 @@ pub async fn start_callback_server(
 
     // Parse query parameters
     let callback_url = format!("http://localhost{}", request_path);
-    let parsed = Url::parse(&callback_url).map_err(|e| format!("Failed to parse callback: {}", e))?;
+    let parsed =
+        Url::parse(&callback_url).map_err(|e| format!("Failed to parse callback: {}", e))?;
 
     let params: HashMap<String, String> = parsed.query_pairs().into_owned().collect();
 
@@ -328,13 +329,11 @@ pub async fn exchange_code_for_tokens(
     if let Some(ref secret) = config.client_secret {
         // Can either use client_secret in body or Basic auth header
         // Using body is more common
-        request = client
-            .post(token_endpoint)
-            .form(&{
-                let mut p = params.clone();
-                p.insert("client_secret", secret.as_str());
-                p
-            });
+        request = client.post(token_endpoint).form(&{
+            let mut p = params.clone();
+            p.insert("client_secret", secret.as_str());
+            p
+        });
     }
 
     let response = request

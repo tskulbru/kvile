@@ -13,7 +13,10 @@ pub fn parse_vscode(content: &str) -> Result<Vec<ParsedRequest>, ParseError> {
 
     // Regex patterns
     let separator_re = Regex::new(r"^###\s*(.*)$").unwrap();
-    let method_re = Regex::new(r"^(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS|TRACE|CONNECT)\s+(.+?)(?:\s+(HTTP/[\d.]+))?$").unwrap();
+    let method_re = Regex::new(
+        r"^(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS|TRACE|CONNECT)\s+(.+?)(?:\s+(HTTP/[\d.]+))?$",
+    )
+    .unwrap();
     let header_re = Regex::new(r"^([\w-]+):\s*(.*)$").unwrap();
     let comment_re = Regex::new(r"^(?:#|//)").unwrap();
     let variable_def_re = Regex::new(r"^@([\w-]+)\s*=\s*(.*)$").unwrap();
@@ -113,7 +116,11 @@ pub fn parse_vscode(content: &str) -> Result<Vec<ParsedRequest>, ParseError> {
         }
 
         // If we have a URL-like line without method, assume GET
-        if request.url.is_empty() && (trimmed.starts_with("http://") || trimmed.starts_with("https://") || trimmed.starts_with('/')) {
+        if request.url.is_empty()
+            && (trimmed.starts_with("http://")
+                || trimmed.starts_with("https://")
+                || trimmed.starts_with('/'))
+        {
             request.url = trimmed.to_string();
             continue;
         }
@@ -147,7 +154,10 @@ GET http://{{hostname}}:{{port}}/users
 "#;
         let requests = parse_vscode(content).unwrap();
         assert_eq!(requests.len(), 1);
-        assert_eq!(requests[0].variables.get("hostname"), Some(&"localhost".to_string()));
+        assert_eq!(
+            requests[0].variables.get("hostname"),
+            Some(&"localhost".to_string())
+        );
         assert_eq!(requests[0].variables.get("port"), Some(&"3000".to_string()));
     }
 }

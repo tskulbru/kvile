@@ -19,7 +19,9 @@ pub fn detect_format(content: &str) -> HttpFileFormat {
     let vscode_var_re = Regex::new(r"^@[\w-]+\s*=").unwrap();
 
     // JetBrains style uses {{variables}} but doesn't have @var = value definitions
-    let has_vscode_vars = content.lines().any(|line| vscode_var_re.is_match(line.trim()));
+    let has_vscode_vars = content
+        .lines()
+        .any(|line| vscode_var_re.is_match(line.trim()));
 
     if has_vscode_vars {
         HttpFileFormat::VsCode
@@ -46,10 +48,15 @@ pub fn substitute_variables(
 ) -> String {
     let var_re = Regex::new(r"\{\{([\w.-]+)\}\}").unwrap();
 
-    var_re.replace_all(input, |caps: &regex::Captures| {
-        let var_name = &caps[1];
-        variables.get(var_name).cloned().unwrap_or_else(|| format!("{{{{{}}}}}", var_name))
-    }).to_string()
+    var_re
+        .replace_all(input, |caps: &regex::Captures| {
+            let var_name = &caps[1];
+            variables
+                .get(var_name)
+                .cloned()
+                .unwrap_or_else(|| format!("{{{{{}}}}}", var_name))
+        })
+        .to_string()
 }
 
 #[cfg(test)]

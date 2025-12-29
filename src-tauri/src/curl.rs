@@ -136,10 +136,8 @@ pub fn parse_curl(input: &str) -> Result<CurlCommand, String> {
                 cmd.flags.push("compressed".to_string());
                 // Add Accept-Encoding if not present
                 if !cmd.headers.contains_key("Accept-Encoding") {
-                    cmd.headers.insert(
-                        "Accept-Encoding".to_string(),
-                        "gzip, deflate".to_string(),
-                    );
+                    cmd.headers
+                        .insert("Accept-Encoding".to_string(), "gzip, deflate".to_string());
                 }
             }
             "-v" | "--verbose" => {
@@ -342,10 +340,7 @@ mod tests {
     fn test_basic_auth() {
         let curl = "curl -u user:password https://api.example.com";
         let cmd = parse_curl(curl).unwrap();
-        assert_eq!(
-            cmd.auth,
-            Some(("user".to_string(), "password".to_string()))
-        );
+        assert_eq!(cmd.auth, Some(("user".to_string(), "password".to_string())));
     }
 
     #[test]
