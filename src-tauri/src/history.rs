@@ -203,6 +203,7 @@ impl HistoryDb {
     }
 
     /// Clear all history
+    #[allow(dead_code)]
     pub fn clear_all(&self) -> SqliteResult<usize> {
         let conn = self.conn.lock().unwrap();
         let affected = conn.execute("DELETE FROM history", [])?;
@@ -210,6 +211,7 @@ impl HistoryDb {
     }
 
     /// Prune old entries, keeping only the most recent N entries per workspace
+    #[allow(dead_code)]
     pub fn prune(&self, max_entries_per_workspace: i32) -> SqliteResult<usize> {
         let conn = self.conn.lock().unwrap();
 

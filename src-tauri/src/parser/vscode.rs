@@ -9,7 +9,6 @@ pub fn parse_vscode(content: &str) -> Result<Vec<ParsedRequest>, ParseError> {
     let mut in_body = false;
     let mut body_lines: Vec<String> = Vec::new();
     let mut file_variables: HashMap<String, String> = HashMap::new();
-    let mut current_line_number = 0;
 
     // Regex patterns
     let separator_re = Regex::new(r"^###\s*(.*)$").unwrap();
@@ -22,7 +21,7 @@ pub fn parse_vscode(content: &str) -> Result<Vec<ParsedRequest>, ParseError> {
     let variable_def_re = Regex::new(r"^@([\w-]+)\s*=\s*(.*)$").unwrap();
 
     for (idx, line) in content.lines().enumerate() {
-        current_line_number = idx + 1;
+        let current_line_number = idx + 1;
         let trimmed = line.trim();
 
         // Check for variable definition (VS Code style: @name = value)

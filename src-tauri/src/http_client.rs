@@ -28,6 +28,7 @@ pub enum HttpError {
     #[error("Request failed: {0}")]
     RequestFailed(#[from] reqwest::Error),
     #[error("Invalid URL: {0}")]
+    #[allow(dead_code)]
     InvalidUrl(String),
 }
 

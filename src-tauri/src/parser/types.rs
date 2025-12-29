@@ -60,6 +60,7 @@ pub enum HttpFileFormat {
     /// VS Code REST Client format
     VsCode,
     /// Mixed or unknown format
+    #[allow(dead_code)]
     Unknown,
 }
 

@@ -42,6 +42,7 @@ pub fn parse_http_content(content: &str) -> Result<Vec<ParsedRequest>, ParseErro
 }
 
 /// Substitute variables in a string with their values
+#[allow(dead_code)]
 pub fn substitute_variables(
     input: &str,
     variables: &std::collections::HashMap<String, String>,

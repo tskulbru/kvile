@@ -79,6 +79,7 @@ pub struct PkceParams {
 
 /// State for an ongoing OIDC authentication flow
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct OidcAuthState {
     pub state: String,
     pub pkce: PkceParams,
@@ -106,7 +107,7 @@ pub fn generate_pkce() -> PkceParams {
     let mut hasher = Sha256::new();
     hasher.update(code_verifier.as_bytes());
     let hash = hasher.finalize();
-    let code_challenge = URL_SAFE_NO_PAD.encode(&hash);
+    let code_challenge = URL_SAFE_NO_PAD.encode(hash);
 
     PkceParams {
         code_verifier,
@@ -293,7 +294,6 @@ pub async fn start_callback_server(
 
     // Get inner socket back and write response
     let socket = reader.into_inner();
-    let mut socket = socket;
     socket
         .write_all(response.as_bytes())
         .await
