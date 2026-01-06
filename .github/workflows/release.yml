@@ -1,14 +1,9 @@
 name: Release
 
 on:
-  push:
-    tags:
-      - 'v*'
+  release:
+    types: [published]
   workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version to release (e.g., 0.1.0)'
-        required: false
 
 permissions:
   contents: write
@@ -70,21 +65,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: v__VERSION__
-          releaseName: 'Kvile v__VERSION__'
-          releaseBody: |
-            ## What's New
-
-            See the [changelog](https://github.com/tskulbru/kvile/blob/main/CHANGELOG.md) for details.
-
-            ## Downloads
-
-            | Platform | File |
-            |----------|------|
-            | Windows | `.msi` or `.exe` |
-            | macOS (Apple Silicon) | `.dmg` (aarch64) |
-            | macOS (Intel) | `.dmg` (x64) |
-            | Linux | `.AppImage` or `.deb` |
-          releaseDraft: true
-          prerelease: false
+          releaseId: ${{ github.event.release.id }}
           args: ${{ matrix.args }}
