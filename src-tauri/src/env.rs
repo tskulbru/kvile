@@ -6,6 +6,9 @@ use std::path::Path;
 pub struct Environment {
     pub name: String,
     pub variables: HashMap<String, String>,
+    /// Variables from the private env file (tracked separately for editing)
+    #[serde(default)]
+    pub private_variables: HashMap<String, String>,
     pub source_file: String,
 }
 
@@ -13,6 +16,9 @@ pub struct Environment {
 pub struct EnvironmentConfig {
     pub environments: Vec<Environment>,
     pub shared: HashMap<String, String>,
+    /// Shared variables from the private env file
+    #[serde(default)]
+    pub private_shared: HashMap<String, String>,
 }
 
 /// Parse http-client.env.json format (JetBrains style)
@@ -48,6 +54,7 @@ pub async fn parse_http_client_env(path: &Path) -> Result<EnvironmentConfig, Str
             environments.push(Environment {
                 name,
                 variables: string_vars,
+                private_variables: HashMap::new(),
                 source_file: path.to_string_lossy().to_string(),
             });
         }
@@ -59,6 +66,7 @@ pub async fn parse_http_client_env(path: &Path) -> Result<EnvironmentConfig, Str
     Ok(EnvironmentConfig {
         environments,
         shared,
+        private_shared: HashMap::new(),
     })
 }
 
@@ -101,27 +109,36 @@ pub async fn load_environment_config(workspace: String) -> Result<EnvironmentCon
     if env_json_path.exists() {
         let mut config = parse_http_client_env(&env_json_path).await?;
 
-        // Also try to load private env file and merge
+        // Also try to load private env file - keep separate for editing
         let private_env_path = workspace_path.join("http-client.private.env.json");
         if private_env_path.exists() {
             if let Ok(private_config) = parse_http_client_env(&private_env_path).await {
-                // Merge private variables into existing environments
+                // Store private variables separately for each environment
                 for private_env in private_config.environments {
                     if let Some(env) = config
                         .environments
                         .iter_mut()
                         .find(|e| e.name == private_env.name)
                     {
-                        // Private variables override public ones
-                        env.variables.extend(private_env.variables);
+                        // Store in private_variables, don't merge into variables
+                        env.private_variables = private_env.variables;
                     } else {
-                        config.environments.push(private_env);
+                        // Environment only exists in private file
+                        config.environments.push(Environment {
+                            name: private_env.name,
+                            variables: HashMap::new(),
+                            private_variables: private_env.variables,
+                            source_file: private_env_path.to_string_lossy().to_string(),
+                        });
                     }
                 }
-                // Merge shared variables
-                config.shared.extend(private_config.shared);
+                // Store private shared variables separately
+                config.private_shared = private_config.shared;
             }
         }
+
+        // Re-sort after potentially adding private-only environments
+        config.environments.sort_by(|a, b| a.name.cmp(&b.name));
 
         return Ok(config);
     }
@@ -129,7 +146,22 @@ pub async fn load_environment_config(workspace: String) -> Result<EnvironmentCon
     // Try http-client.private.env.json alone
     let private_env_path = workspace_path.join("http-client.private.env.json");
     if private_env_path.exists() {
-        return parse_http_client_env(&private_env_path).await;
+        let private_config = parse_http_client_env(&private_env_path).await?;
+        // When only private file exists, put all vars in private_variables
+        return Ok(EnvironmentConfig {
+            environments: private_config
+                .environments
+                .into_iter()
+                .map(|e| Environment {
+                    name: e.name,
+                    variables: HashMap::new(),
+                    private_variables: e.variables,
+                    source_file: e.source_file,
+                })
+                .collect(),
+            shared: HashMap::new(),
+            private_shared: private_config.shared,
+        });
     }
 
     // Fallback to .env file
@@ -145,9 +177,11 @@ pub async fn load_environment_config(workspace: String) -> Result<EnvironmentCon
             environments: vec![Environment {
                 name: "default".to_string(),
                 variables: vars,
+                private_variables: HashMap::new(),
                 source_file: dotenv_path.to_string_lossy().to_string(),
             }],
             shared: HashMap::new(),
+            private_shared: HashMap::new(),
         });
     }
 
@@ -155,7 +189,54 @@ pub async fn load_environment_config(workspace: String) -> Result<EnvironmentCon
     Ok(EnvironmentConfig {
         environments: vec![],
         shared: HashMap::new(),
+        private_shared: HashMap::new(),
     })
+}
+
+/// Save or update an environment in the workspace
+#[tauri::command]
+pub async fn save_environment(
+    workspace: String,
+    env_name: String,
+    variables: HashMap<String, String>,
+    is_private: bool,
+) -> Result<(), String> {
+    let workspace_path = Path::new(&workspace);
+    let file_name = if is_private {
+        "http-client.private.env.json"
+    } else {
+        "http-client.env.json"
+    };
+    let file_path = workspace_path.join(file_name);
+
+    // Read existing config or create new one
+    let mut config: HashMap<String, HashMap<String, serde_json::Value>> = if file_path.exists() {
+        let content = tokio::fs::read_to_string(&file_path)
+            .await
+            .map_err(|e| format!("Failed to read env file: {}", e))?;
+        serde_json::from_str(&content).map_err(|e| format!("Failed to parse env file: {}", e))?
+    } else {
+        HashMap::new()
+    };
+
+    // Convert variables to JSON values
+    let json_variables: HashMap<String, serde_json::Value> = variables
+        .into_iter()
+        .map(|(k, v)| (k, serde_json::Value::String(v)))
+        .collect();
+
+    // Update or insert the environment
+    config.insert(env_name, json_variables);
+
+    // Write back to file with pretty formatting
+    let content = serde_json::to_string_pretty(&config)
+        .map_err(|e| format!("Failed to serialize env file: {}", e))?;
+
+    tokio::fs::write(&file_path, content)
+        .await
+        .map_err(|e| format!("Failed to write env file: {}", e))?;
+
+    Ok(())
 }
 
 #[cfg(test)]

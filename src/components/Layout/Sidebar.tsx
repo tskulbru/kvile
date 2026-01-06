@@ -20,7 +20,6 @@ import { useSettingsStore } from "@/stores/settingsStore";
 import { cn } from "@/lib/utils";
 import { open } from "@tauri-apps/plugin-dialog";
 import { isTauriAvailable } from "@/lib/tauri";
-import { EnvironmentPanel } from "@/components/Environment/EnvironmentPanel";
 import { Logo } from "@/components/Logo";
 
 // Method colors for request badges
@@ -210,6 +209,8 @@ export function Sidebar() {
     closeWorkspace,
     setShowHistoryPanel,
     setShowSettingsPanel,
+    setShowEnvPanel,
+    setShowCreateEnvDialog,
   } = useAppStore();
 
   const { theme, setSetting, getResolvedTheme } = useSettingsStore();
@@ -228,9 +229,6 @@ export function Sidebar() {
 
   // Get environments from config
   const environments = environmentConfig?.environments || [];
-
-  // State for environment panel
-  const [showEnvPanel, setShowEnvPanel] = useState(false);
 
   // Extract workspace name from path
   const workspaceName = workspacePath?.split("/").pop() || null;
@@ -312,15 +310,26 @@ export function Sidebar() {
       <div className="p-2 border-b border-border">
         <div className="flex items-center justify-between mb-1">
           <label className="text-xs text-muted-foreground">Environment</label>
-          {environments.length > 0 && (
-            <button
-              onClick={() => setShowEnvPanel(true)}
-              className="p-1 rounded hover:bg-accent transition-colors"
-              title="View variables"
-            >
-              <Eye className="h-3.5 w-3.5" />
-            </button>
-          )}
+          <div className="flex items-center gap-1">
+            {workspacePath && (
+              <button
+                onClick={() => setShowEnvPanel(true)}
+                className="p-1 rounded hover:bg-accent transition-colors"
+                title="View variables"
+              >
+                <Eye className="h-3.5 w-3.5" />
+              </button>
+            )}
+            {workspacePath && (
+              <button
+                onClick={() => setShowCreateEnvDialog(true)}
+                className="p-1 rounded hover:bg-accent transition-colors"
+                title="Create environment"
+              >
+                <Plus className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
         </div>
         <select
           value={activeEnvironment}
@@ -446,11 +455,6 @@ export function Sidebar() {
         )}
       </div>
 
-      {/* Environment Panel */}
-      <EnvironmentPanel
-        isOpen={showEnvPanel}
-        onClose={() => setShowEnvPanel(false)}
-      />
     </div>
   );
 }

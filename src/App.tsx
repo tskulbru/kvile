@@ -9,6 +9,8 @@ import { HistoryPanel } from "./components/History/HistoryPanel";
 import { CurlImportDialog } from "./components/Import/CurlImportDialog";
 import { DiffPanel } from "./components/Response/DiffPanel";
 import { SettingsPanel } from "./components/Settings/SettingsPanel";
+import { EnvironmentPanel } from "./components/Environment/EnvironmentPanel";
+import { CreateEnvironmentDialog } from "./components/Environment/CreateEnvironmentDialog";
 import { useAppStore } from "./stores/appStore";
 import { useSettingsStore } from "./stores/settingsStore";
 import { useFileWatcher } from "./hooks/useFileWatcher";
@@ -31,6 +33,11 @@ function App() {
     setShowCurlImport,
     showSettingsPanel,
     setShowSettingsPanel,
+    showEnvPanel,
+    setShowEnvPanel,
+    showCreateEnvDialog,
+    setShowCreateEnvDialog,
+    environmentConfig,
     historyEntries,
     isLoadingHistory,
     viewHistoryEntry,
@@ -203,6 +210,19 @@ function App() {
       <SettingsPanel
         isOpen={showSettingsPanel}
         onClose={() => setShowSettingsPanel(false)}
+      />
+
+      {/* Environment Panel */}
+      <EnvironmentPanel
+        isOpen={showEnvPanel}
+        onClose={() => setShowEnvPanel(false)}
+      />
+
+      {/* Create Environment Dialog */}
+      <CreateEnvironmentDialog
+        isOpen={showCreateEnvDialog}
+        onClose={() => setShowCreateEnvDialog(false)}
+        existingEnvironments={environmentConfig?.environments.map((e) => e.name) || []}
       />
     </div>
   );

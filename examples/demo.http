@@ -1,12 +1,23 @@
 ### Kvile Demo - HTTP File Examples
 # This file demonstrates the .http file syntax supported by Kvile
+#
+# NOTE: This file uses environment variables from http-client.env.json
+# Select an environment (dev/staging/prod) from the sidebar dropdown
+# to see different baseUrl values.
 
 ###############################################
-# Variables (VS Code REST Client style)
+# Environment Variables
 ###############################################
+# Variables like {{baseUrl}} and {{contentType}} come from:
+#   - http-client.env.json (per-environment values)
+#   - http-client.private.env.json (secrets, merged with above)
+#   - $shared section (shared across all environments)
+#
+# Inline variables (below) can override environment variables:
+# @contentType = text/plain   # Uncomment to override
 
-@baseUrl = https://jsonplaceholder.typicode.com
-@contentType = application/json
+# This variable is NOT in the env file, so it's defined inline:
+@customHeader = X-Kvile-Demo
 
 ###############################################
 # Basic GET Request
@@ -100,9 +111,12 @@ GET {{baseUrl}}/users/1
 ###############################################
 
 ### Request with custom headers
+# Shows: environment variable (baseUrl), shared variable (contentType),
+# inline variable (customHeader), and private env variable (secretToken)
 GET {{baseUrl}}/posts/1
-Accept: application/json
-X-Custom-Header: custom-value
+Accept: {{contentType}}
+{{customHeader}}: demo-value
+Authorization: Bearer {{secretToken}}
 Cache-Control: no-cache
 
 ###############################################

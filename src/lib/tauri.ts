@@ -64,12 +64,14 @@ export interface FileInfo {
 export interface Environment {
   name: string;
   variables: Record<string, string>;
+  private_variables: Record<string, string>;
   source_file: string;
 }
 
 export interface EnvironmentConfig {
   environments: Environment[];
   shared: Record<string, string>;
+  private_shared: Record<string, string>;
 }
 
 /**
@@ -129,6 +131,23 @@ export async function loadEnvironmentConfig(
 ): Promise<EnvironmentConfig> {
   return invokeWithErrorHandling<EnvironmentConfig>("load_environment_config", {
     workspace,
+  });
+}
+
+/**
+ * Save or update an environment in the workspace
+ */
+export async function saveEnvironment(
+  workspace: string,
+  envName: string,
+  variables: Record<string, string>,
+  isPrivate: boolean
+): Promise<void> {
+  return invokeWithErrorHandling<void>("save_environment", {
+    workspace,
+    envName,
+    variables,
+    isPrivate,
   });
 }
 

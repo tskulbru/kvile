@@ -160,6 +160,10 @@ interface AppState {
   setShowCurlImport: (show: boolean) => void;
   showSettingsPanel: boolean;
   setShowSettingsPanel: (show: boolean) => void;
+  showEnvPanel: boolean;
+  setShowEnvPanel: (show: boolean) => void;
+  showCreateEnvDialog: boolean;
+  setShowCreateEnvDialog: (show: boolean) => void;
 
   // Diff/Compare
   showDiffPanel: boolean;
@@ -453,9 +457,13 @@ export const useAppStore = create<AppState>()(
           (e) => e.name === activeEnvironment
         );
 
+        // Merge: shared (public) -> shared (private) -> env vars (public) -> env vars (private)
+        // Private variables override public ones with the same key
         return {
           ...environmentConfig.shared,
+          ...(environmentConfig.private_shared || {}),
           ...(env?.variables || {}),
+          ...(env?.private_variables || {}),
         };
       },
 
@@ -860,6 +868,14 @@ export const useAppStore = create<AppState>()(
       showSettingsPanel: false,
       setShowSettingsPanel: (show: boolean) => {
         set({ showSettingsPanel: show });
+      },
+      showEnvPanel: false,
+      setShowEnvPanel: (show: boolean) => {
+        set({ showEnvPanel: show });
+      },
+      showCreateEnvDialog: false,
+      setShowCreateEnvDialog: (show: boolean) => {
+        set({ showCreateEnvDialog: show });
       },
 
       // Diff/Compare

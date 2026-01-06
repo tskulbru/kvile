@@ -32,6 +32,7 @@ pub fn run() {
             stop_watching,
             get_watched_path,
             load_environment_config,
+            save_environment,
             // History commands
             get_history,
             get_history_entry,
