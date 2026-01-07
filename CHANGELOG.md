@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1](https://github.com/tskulbru/kvile/compare/kvile-v0.2.0...kvile-v0.2.1) (2026-01-07)
+
+
+### Features
+
+* add environment management UI with public/private differentiation ([262aced](https://github.com/tskulbru/kvile/commit/262acedf9e4efbb20101a74f475875dea2dfaa53))
+* add Kvile app icon and branding ([2ba6b56](https://github.com/tskulbru/kvile/commit/2ba6b56137e8fe0dc7912f52b70346f83af80fb4))
+
 ## [0.1.0] - 2024-12-30
 
 ### Added
