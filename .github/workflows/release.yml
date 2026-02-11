@@ -3,7 +3,17 @@ name: Release
 on:
   release:
     types: [published]
+  workflow_call:
+    inputs:
+      tag_name:
+        required: true
+        type: string
   workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Tag name to attach assets to (e.g. kvile-v0.2.1)'
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -65,5 +75,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          releaseId: ${{ github.event.release.id }}
+          tagName: ${{ inputs.tag_name || github.event.release.tag_name }}
           args: ${{ matrix.args }}
