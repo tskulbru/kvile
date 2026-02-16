@@ -10,7 +10,11 @@
       "prerelease": false,
       "extra-files": [
         "src-tauri/tauri.conf.json",
-        "src-tauri/Cargo.toml"
+        {
+          "type": "toml",
+          "path": "src-tauri/Cargo.toml",
+          "jsonpath": "$.package.version"
+        }
       ]
     }
   }
