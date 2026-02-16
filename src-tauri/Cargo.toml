@@ -1,6 +1,6 @@
 [package]
 name = "kvile"
-version = "0.2.1"
+version = "0.2.2"
 description = "A HTTP debugging application focused on .http files"
 authors = ["Torstein S. Skulbru"]
 edition = "2021"
