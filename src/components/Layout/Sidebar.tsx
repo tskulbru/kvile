@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   FolderOpen,
   File,
@@ -20,6 +20,7 @@ import { useSettingsStore } from "@/stores/settingsStore";
 import { cn } from "@/lib/utils";
 import { open } from "@tauri-apps/plugin-dialog";
 import { isTauriAvailable } from "@/lib/tauri";
+import { createHttpFile } from "@/lib/file-utils";
 import { Logo } from "@/components/Logo";
 
 // Method colors for request badges
@@ -207,6 +208,8 @@ export function Sidebar() {
     clearError,
     loadWorkspace,
     closeWorkspace,
+    refreshWorkspace,
+    loadFileFromPath,
     setShowHistoryPanel,
     setShowSettingsPanel,
     setShowEnvPanel,
@@ -234,11 +237,13 @@ export function Sidebar() {
   const workspaceName = workspacePath?.split("/").pop() || null;
 
   // Load workspace when path is set (e.g., from persisted state)
+  const lastLoadedPath = useRef<string | null>(null);
   useEffect(() => {
-    if (workspacePath && fileTree.length === 0 && !isLoadingFiles && isTauriAvailable()) {
+    if (workspacePath && workspacePath !== lastLoadedPath.current && isTauriAvailable()) {
+      lastLoadedPath.current = workspacePath;
       loadWorkspace(workspacePath);
     }
-  }, [workspacePath, fileTree.length, isLoadingFiles, loadWorkspace]);
+  }, [workspacePath, loadWorkspace]);
 
   const handleOpenFolder = async () => {
     if (!isTauriAvailable()) {
@@ -262,6 +267,20 @@ export function Sidebar() {
   const handleRefresh = () => {
     if (workspacePath && !isLoadingFiles) {
       loadWorkspace(workspacePath);
+    }
+  };
+
+  const handleCreateFile = async () => {
+    if (!workspacePath) return;
+    try {
+      const filePath = await createHttpFile(workspacePath);
+      if (filePath) {
+        await refreshWorkspace();
+        const fileName = filePath.split("/").pop() || filePath;
+        await loadFileFromPath(filePath, fileName);
+      }
+    } catch (error) {
+      console.error("Failed to create file:", error);
     }
   };
 
@@ -437,6 +456,12 @@ export function Sidebar() {
             <FolderOpen className="h-8 w-8 mx-auto mb-2 opacity-50" />
             <p>No .http files found</p>
             <p className="text-xs mt-1">Create a .http file to get started</p>
+            <button
+              onClick={handleCreateFile}
+              className="mt-3 px-3 py-1.5 text-xs bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+            >
+              New File
+            </button>
           </div>
         )}
 

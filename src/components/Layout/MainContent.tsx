@@ -10,6 +10,7 @@ import { ResponsePanel } from "@/components/Response/ResponsePanel";
 import { RunAllResults } from "@/components/Response/RunAllResults";
 import { TestResultsPanel } from "@/components/Response/TestResultsPanel";
 import { isTauriAvailable, type ParsedRequest } from "@/lib/tauri";
+import { createHttpFile } from "@/lib/file-utils";
 import { getRequestAtCursor } from "@/lib/http-parser";
 import { substituteVariables, extractInlineVariables } from "@/lib/variables";
 import { executePreRequestScript, executePostRequestScript } from "@/lib/script-runtime";
@@ -36,6 +37,9 @@ export function MainContent() {
     lastError,
     clearError,
     loadWorkspace,
+    workspacePath,
+    refreshWorkspace,
+    loadFileFromPath,
     cursorLine,
     getCurrentVariables,
     // Run all
@@ -318,6 +322,24 @@ export function MainContent() {
     }
   }, [loadWorkspace]);
 
+  const handleNewFile = useCallback(async () => {
+    if (!workspacePath) {
+      // No workspace open - prompt user to open a folder first
+      await handleOpenFolder();
+      return;
+    }
+    try {
+      const filePath = await createHttpFile(workspacePath);
+      if (filePath) {
+        await refreshWorkspace();
+        const fileName = filePath.split("/").pop() || filePath;
+        await loadFileFromPath(filePath, fileName);
+      }
+    } catch (error) {
+      console.error("Failed to create file:", error);
+    }
+  }, [workspacePath, refreshWorkspace, loadFileFromPath, handleOpenFolder]);
+
   if (openFiles.length === 0) {
     return (
       <div className="h-full flex items-center justify-center text-muted-foreground">
@@ -334,7 +356,10 @@ export function MainContent() {
             >
               Open Folder
             </button>
-            <button className="px-4 py-2 border border-input rounded-md hover:bg-accent transition-colors">
+            <button
+              onClick={handleNewFile}
+              className="px-4 py-2 border border-input rounded-md hover:bg-accent transition-colors"
+            >
               New File
             </button>
           </div>
